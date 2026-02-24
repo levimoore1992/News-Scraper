@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+    <div class="flex justify-center items-center min-h-screen bg-gray-100 m-10">
+        <div class="w-full max-w-lg p-8 bg-white shadow-xl rounded-lg">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-8 text-center">Contact Us</h2>
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div>
+                        <label for="{{ field.id_for_label }}" class="block text-gray-700 font-medium mb-3">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% if field.errors %}
+                            {% for error in field.errors %}
+                                <p class="bg-red-500 text-white text-sm p-3 rounded mt-2">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 w-full">
+                    Submit
+                </button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

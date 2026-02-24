@@ -1,0 +1,25 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "main": "vite.config.mjs",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "vite": "^6.2.4"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.18",
+    "alpinejs": "^3.14.9",
+    "daisyui": "^5.5.14",
+    "htmx.org": "^2.0.4",
+    "hyperscript.org": "^0.9.14",
+    "tailwindcss": "^4.1.18"
+  }
+}

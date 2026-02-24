@@ -1,0 +1,22 @@
+[MASTER]
+# Specify directories to add to the Python path.
+init-hook='import sys; sys.path.append("/app")'
+
+
+# Load the pylint-django plugin
+load-plugins=pylint_django
+
+# Point to your Django settings module
+django-settings-module=core.settings
+
+# Add directories to ignore
+ignore=.github,.pytest_cache,
+
+
+[MESSAGES CONTROL]
+disable=C0114,W0614,W0401,C0301,W0613,E5141,E5142
+
+
+
+
+

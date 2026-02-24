@@ -1,0 +1,7 @@
+<div class="flex justify-center items-center space-x-2">
+    {% for link in links %}
+        <a href="{{ link.profile_url }}" target="_blank" class="inline-block">
+            <img src="{{ link.image.url }}" alt="{{ link.platform_name }}" class="w-8 h-8">
+        </a>
+    {% endfor %}
+</div>

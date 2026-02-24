@@ -1,0 +1,14 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+{% load custom_filters %}
+
+{% block submit_buttons_bottom %}
+    <div class="submit-row">
+        <input type="submit" value="{% trans 'Save' %}" class="default" name="_save" />
+
+        {% contact_status_choices as status_choices %}
+        {% for status_value, status_name in status_choices %}
+            <input type="submit" value="Set {{ status_name }}" name="_{{ status_value|lower|underscorize }}" />
+        {% endfor %}
+    </div>
+{% endblock %}

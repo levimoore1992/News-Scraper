@@ -1,0 +1,31 @@
+{% comment %}
+    Footer template.
+{% endcomment %}
+{% load custom_filters %}
+
+<footer class="bg-white border-t border-gray-200 py-12 text-gray-600">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="md:flex md:items-center md:justify-between">
+      {% social_media_row %}
+      <div class="mt-8 md:order-1 md:mt-0">
+        <nav class="-mb-2 flex flex-wrap justify-center" aria-label="Footer">
+          <div class="px-2 py-2 md:px-4">
+            <a href="{% url 'contact_us' %}" class="text-base font-medium text-gray-500 hover:text-gray-900">Contact Us</a>
+          </div>
+          <div class="px-2 py-2 md:px-4">
+            <a href="{% url 'faqs' %}" class="text-base font-medium text-gray-500 hover:text-gray-900">FAQs</a>
+          </div>
+          <div class="px-2 py-2 md:px-4">
+            <a href="{% url 'terms_and_conditions' %}" class="text-base font-medium text-gray-500 hover:text-gray-900">Terms</a>
+          </div>
+          <div class="px-2 py-2 md:px-4">
+            <a href="{% url 'privacy_policy' %}" class="text-base font-medium text-gray-500 hover:text-gray-900">Privacy Policy</a>
+          </div>
+        </nav>
+      </div>
+    </div>
+    <div class="mt-8 border-t border-gray-200 pt-8 md:flex md:items-center md:justify-between">
+      <p class="text-center text-base font-medium text-gray-500">Your App Name © {% now "Y" %}</p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,23 @@
+{% load static %}
+<div class="space-y-4 md:space-y-6 max-w-md mx-auto mt-24 md:mt-36 pb-10">
+  <div class="rating !flex justify-center">
+    {% for _ in "12345" %}
+      <div class="mask mask-star" aria-label="1 star" aria-current="true"></div>
+    {% endfor %}
+  </div>
+
+  <div class="text-base leading-relaxed space-y-2 max-w-md mx-auto text-center">
+    <p>I dont want to send my resume to every employer. But Im too busy to build a portfolio website</p>
+    <p>Tech Guru shows that Im a Guru by helping me showcase my businesses and generate traffic.</p>
+  </div>
+
+  <div class="flex justify-center items-center gap-3 md:gap-4">
+    <img alt="product reviewer" src="{% static 'images/product_review.jpg' %}" loading="lazy" width="48" height="48"
+         decoding="async" data-nimg="1" class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
+         style="color:transparent">
+    <div>
+      <p class="font-semibold">Son Sohee</p>
+      <p class="text-base-content-secondary text-sm">Product Engineer</p>
+    </div>
+  </div>
+</div>

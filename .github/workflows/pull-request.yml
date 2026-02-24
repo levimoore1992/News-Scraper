@@ -1,0 +1,89 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+
+jobs:
+  lint-and-format:
+    name: Lint and Format
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.14'
+
+      - name: Run Ruff Format Check
+        uses: astral-sh/ruff-action@v3
+        with:
+          args: format --check .
+
+      - name: Build Docker Environment
+        run: |
+          cp .env.example .env
+          docker compose up -d
+
+      
+
+      - name: Run Pylint
+        run: docker compose run web pylint core apps tests
+
+      - name: Run djhtml
+        run: docker compose run web djhtml templates --check
+
+  check-migrations:
+    name: Check for Migrations
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: lint-and-format
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build Docker Environment
+        run: |
+          cp .env.example .env
+          docker compose up -d
+
+      - name: Check for Missing Migrations
+        run: docker compose run web bash -c "python manage.py makemigrations --dry-run --check"
+
+  run-tests:
+    name: Run Tests and Coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [lint-and-format, check-migrations]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build Docker Environment
+        run: |
+          cp .env.example .env
+          docker compose up -d
+
+      - name: Run Tests with Coverage
+        run: docker compose run web pytest -n auto --cov=apps --cov-report=json --cov-report=term-missing
+
+      - name: Check Coverage Percentage
+        run: |
+          COVERAGE=$(jq '.totals.percent_covered' coverage.json)
+          if (( $(echo "$COVERAGE < 100" | bc -l) )); then
+            echo "Coverage is below 100%"
+            exit 1
+          fi
+
+      - name: Upload Code Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+          flags: unittests
+          files: coverage.json

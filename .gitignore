@@ -1,0 +1,10 @@
+.idea/vcs.xml
+*.pyc
+core/settings/local.py
+.env
+/core/staticfiles/
+restore.dump
+/.pytest_cache/
+.coverage
+/core/media/
+frontend/node_modules/

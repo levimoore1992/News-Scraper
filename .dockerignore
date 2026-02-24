@@ -1,0 +1,55 @@
+# Git
+.git
+.gitignore
+
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__
+*.egg-info
+.eggs
+*.egg
+.pytest_cache
+.coverage
+htmlcov
+.mypy_cache
+.ruff_cache
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Node.js (node_modules can be hundreds of MB)
+frontend/node_modules
+
+# Media files (user uploads - not needed in container)
+media
+
+# Static files (generated, can be collected at runtime)
+core/staticfiles
+
+# Database dumps
+*.dump
+restore.dump
+
+# Local settings
+.env
+.env.*
+core/settings/local.py
+
+# Docker files (not needed inside container)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Documentation
+README.md
+*.md
+
+# Other
+makefile
+.mock_certs
+*.log

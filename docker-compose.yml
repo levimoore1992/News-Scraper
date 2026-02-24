@@ -1,0 +1,69 @@
+services:
+    db:
+        image: postgres:16.2
+        volumes:
+            - postgres_data:/var/lib/postgresql/data/
+        ports:
+            - "5432:5432"
+        environment:
+            - POSTGRES_DB=django
+            - POSTGRES_USER=django
+            - POSTGRES_PASSWORD=django
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U django"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    web:
+        build:
+            context: .
+            dockerfile: Dockerfile-local
+        volumes:
+            - .:/app
+        ports:
+            - "8000:8000"
+        depends_on:
+            db:
+                condition: service_healthy
+            
+            
+        restart: on-failure:1
+        env_file:
+            -   .env
+
+    frontend:
+        image: node:23-slim  # Using the slim variant
+        working_dir: /app/frontend
+        volumes:
+            - .:/app
+        command: bash -c "npm install && npm run dev"
+        environment:
+            - ROLLUP_SKIP_NODE_RESOLUTION=true
+            - NODE_OPTIONS=--max-old-space-size=4096
+        ports:
+            - "5173:5173"
+
+    procrastinate-worker:
+        build:
+            context: .
+            dockerfile: Dockerfile-local
+        command: "python manage.py procrastinate worker"
+        volumes:
+            - .:/app
+        depends_on:
+            db:
+                condition: service_healthy
+        env_file:
+            - .env
+
+    stripe-cli:
+        image: stripe/stripe-cli:latest
+        command: "listen --api-key ${STRIPE_SK_KEY} --forward-to https://web:8000/payments/stripe-webhook/ --skip-verify"
+        env_file:
+            - .env
+        depends_on:
+            - web
+
+volumes:
+    postgres_data:

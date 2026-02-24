@@ -1,0 +1,44 @@
+# Core libraries
+Django~=6.0
+psycopg~=3.3
+Pillow~=12.0
+requests~=2.32.3
+django-auto-prefetch~=1.14
+django-htmx~=1.23
+whitenoise~=6.9
+dj-database-url~=3.0
+
+# General Libraries
+django-ckeditor-5~=0.2.15
+django-model-utils~=5.0.0
+# Task manager
+procrastinate[django]~=3.2
+# Authentication
+django-allauth[socialaccount]~=65.10
+
+# For Google reCAPTCHA
+django-recaptcha~=4.1
+
+# For feature flags
+django-waffle~=5.0
+
+# Tracking user IP
+django-ipware~=7.0.1
+
+# For lifecycle hooks signal-like feature
+django-lifecycle~=1.2.4
+
+# For Slack notifications
+slack-sdk~=3.35
+
+# icons for the app
+heroicons~=2.11
+
+# For modularizing css and javascript
+django-vite~=3.1
+
+# For payments
+stripe~=12.4
+
+# for emails
+resend~=2.19.0

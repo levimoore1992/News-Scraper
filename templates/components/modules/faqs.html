@@ -1,0 +1,53 @@
+{% load static %}
+
+<section class="bg-base-200" id="faq" x-data="{ activeIndex: null }">
+    <div class="py-24 px-8 max-w-7xl mx-auto flex flex-col md:flex-row gap-12">
+        <div class="flex flex-col text-left basis-1/2">
+            <p class="inline-block font-semibold text-primary mb-4">FAQ</p>
+            <p class="sm:text-4xl text-3xl font-extrabold text-base-content">Frequently Asked Questions</p>
+        </div>
+        <ul class="basis-1/2">
+            {% for faq in faqs %}
+                <li x-data="{ index: {{ forloop.counter0 }} }">
+                    <button
+                        @click="activeIndex === index ? activeIndex = null : activeIndex = index"
+                        class="relative flex gap-2 items-center w-full py-5 text-base font-semibold text-left border-t md:text-lg border-base-content/10"
+                        :aria-expanded="activeIndex === index"
+                        type="button"
+                    >
+                        <span class="flex-1 text-base-content">{{ faq.question|safe }}</span>
+                        <svg
+                            class="flex-shrink-0 w-4 h-4 ml-auto fill-current transform transition-transform duration-300 ease-in-out"
+                            :class="{'rotate-180': activeIndex === index}"
+                            viewBox="0 0 16 16"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <rect y="7" width="16" height="2" rx="1" class="transform origin-center transition duration-200 ease-out"></rect>
+                            <rect y="7" width="16" height="2" rx="1" class="transform origin-center rotate-90 transition duration-200 ease-out" :class="{'opacity-0': activeIndex === index}"></rect>
+                        </svg>
+                    </button>
+                    <div
+                        x-show="activeIndex === index"
+                        x-transition:enter="transition-all duration-300 ease-out"
+                        x-transition:enter-start="opacity-0 max-h-0"
+                        x-transition:enter-end="opacity-100 max-h-96"
+                        x-transition:leave="transition-all duration-300 ease-in"
+                        x-transition:leave-start="opacity-100 max-h-96"
+                        x-transition:leave-end="opacity-0 max-h-0"
+                        class="overflow-hidden"
+                        style="display: none;"
+                    >
+                        <div class="pb-5 leading-relaxed">
+                            <div class="space-y-2 leading-relaxed">
+                                {{ faq.answer|safe }}
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    {% include 'components/modules/product_review.html' %}
+
+</section>

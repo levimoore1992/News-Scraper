@@ -1,0 +1,22 @@
+<!-- Updated loading container with improved centering -->
+<div id="loading-container" class="hidden fixed inset-0 flex items-center justify-center bg-white/80 z-50">
+    <div class="relative">
+        <!-- Outer ring -->
+        <div class="w-16 h-16 rounded-full border-4 border-blue-200 animate-spin"></div>
+        <!-- Inner ring -->
+        <div class="w-16 h-16 rounded-full border-4 border-transparent border-t-blue-500 animate-spin absolute top-0 left-0"></div>
+        <!-- Center dot -->
+        <div class="w-4 h-4 bg-blue-500 rounded-full absolute top-6 left-6"></div>
+    </div>
+</div>
+
+<style>
+    /* Ensure the container stays centered */
+    #loading-container {
+        display: none;
+    }
+
+    #loading-container.htmx-request {
+        display: flex !important;
+    }
+</style>
