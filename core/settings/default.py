@@ -55,12 +55,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sites",
     # third party apps
-    "django_recaptcha",  # Google Captcha
     "waffle",  # Feature Flags
     "django_ckeditor_5",
     "django_htmx",
-    "heroicons",
-    "django_vite",
     # auth apps
     "allauth",
     "allauth.account",
@@ -69,9 +66,9 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.github",
     "procrastinate.contrib.django",
     # project apps
-    "apps.main",
     "apps.users",
-    "apps.payments",
+    "apps.scraper",
+    
 ]
 
 MIDDLEWARE = [
@@ -81,14 +78,11 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "apps.users.middleware.CustomLoginRequiredMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "waffle.middleware.WaffleMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-    "apps.users.middleware.SecurityMiddleware",
-    "apps.main.middleware.HTMXExceptionMiddleware",
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -104,11 +98,9 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "apps.main.context_processors.notifications",
             ],
             "builtins": [
                 "waffle.templatetags.waffle_tags",
-                "heroicons.templatetags.heroicons",
             ],
         },
     },
@@ -216,10 +208,6 @@ LOGGING = {
     },
 }
 
-STRIPE_API_PK = os.getenv("STRIPE_PK_KEY")
-STRIPE_API_SK = os.getenv("STRIPE_SK_KEY")
-STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
-
 
 # Authentication settings
 
@@ -229,14 +217,7 @@ AUTHENTICATION_BACKENDS = ("allauth.account.auth_backends.AuthenticationBackend"
 
 LOGIN_URL = "account_login"
 
-LOGIN_REQUIRED_URLS_EXCEPTIONS = [
-    r"^/accounts/",  # allauth URLs
-    r"^/cookies/",  # cookie consent URLs
-    r"^/static/",  # static files
-    r"^/media/",  # media files
-    r"^/__debug__/",
-    # Add any other paths you want to exempt from login
-]
+
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
@@ -258,13 +239,7 @@ SOCIALACCOUNT_PROVIDERS = {
         },
         "OAUTH_PKCE_ENABLED": True,
     },
-    "github": {
-        "APP": {
-            "client_id": os.getenv("GITHUB_CLIENT_ID"),
-            "secret": os.getenv("GITHUB_SECRET_KEY"),
-            "key": "",
-        }
-    },
+
 }
 # Social Account Settings
 SOCIALACCOUNT_LOGIN_ON_GET = True
@@ -276,12 +251,6 @@ ACCOUNT_SIGNUP_FIELDS = ["email*"]  # Email-only signup, no password
 ACCOUNT_ADAPTER = "apps.users.adapters.CustomAccountAdapter"
 SOCIALACCOUNT_ADAPTER = "apps.users.adapters.CustomSocialAccountAdapter"
 
-
-# Google Captcha Settings
-RECAPTCHA_PRIVATE_KEY = os.getenv("RECAPTCHA_PRIVATE_KEY", "")
-RECAPTCHA_PUBLIC_KEY = os.getenv("RECAPTCHA_PUBLIC_KEY", "")
-# Silencing the error below because we intentionally use the test keys in development
-SILENCED_SYSTEM_CHECKS = ["django_recaptcha.recaptcha_test_key_error"]
 
 # DigitalOcean Spaces settings
 AWS_ACCESS_KEY_ID = os.getenv("DIGITAL_OCEAN_ACCESS_KEY")
@@ -422,10 +391,6 @@ CKEDITOR_5_CONFIGS = {
     },
 }
 CK_EDITOR_5_UPLOAD_FILE_VIEW_NAME = "ckeditor_upload"
-
-SLACK_BOT_TOKEN = os.getenv("SLACK_BOT_TOKEN")
-SLACK_DEFAULT_CHANNEL = os.getenv("DEFAULT_SLACK_CHANNEL")
-ENABLE_SLACK_MESSAGES = os.getenv("ENABLE_SLACK_MESSAGES", "FALSE").upper() == "TRUE"
 
 # Email settings
 RESEND_API_KEY = os.getenv("RESEND_API_KEY")
