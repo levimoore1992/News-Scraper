@@ -20,6 +20,7 @@ ENV PYTHONUNBUFFERED=1 \
 # Install dependencies
 COPY requirements/ /app/requirements/
 RUN pip install --no-cache-dir -r requirements/prod.txt
+RUN apt-get update && playwright install chromium && playwright install-deps chromium
 
 # Copy project files
 COPY . /app/

@@ -13,6 +13,8 @@ from django.utils import timezone
 
 from apps.scraper.services.llm import LLMService
 
+from playwright.sync_api import sync_playwright
+
 logger = logging.getLogger("scraper")
 
 
@@ -36,7 +38,7 @@ class Scraper(models.Model):
 
     site = models.CharField(max_length=240, choices=SiteMapping.choices)
     active = models.BooleanField(default=True)
-    auto_publish = models.BooleanField(default=False)
+
     name = models.CharField(max_length=240, unique=True)
     base_url = models.CharField(max_length=1000, verbose_name="Starting url")
     category = models.CharField(max_length=240, verbose_name="Category")
@@ -79,8 +81,10 @@ class Scraper(models.Model):
     # Page fetching
     # -------------------------------------------------------------------------
 
-    def fetch_page(self, url: str) -> Optional[str]:
+    def fetch_page(self, url: str, use_playwright: bool = False) -> Optional[str]:
         """Fetch the HTML content of the given URL."""
+        if use_playwright:
+            return self._fetch_with_playwright(url)
 
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -110,10 +114,43 @@ class Scraper(models.Model):
             status_code = getattr(e.response, "status_code", "unknown")
             msg = f"HTTP {status_code} fetching {url}"
             if status_code == 403:
-                msg += " (blocked)"
+                msg += " (blocked — may need Playwright)"
             raise Exception(msg)
         except requests.RequestException as e:
             raise Exception(f"Error fetching {url}: {e}")
+
+    def _fetch_with_playwright(self, url: str) -> str:
+        """Fetch page content using Playwright as a fallback."""
+        try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch(
+                    headless=True,
+                    args=[
+                        "--no-sandbox",
+                        "--disable-setuid-sandbox",
+                        "--disable-dev-shm-usage",
+                        "--disable-gpu",
+                    ],
+                )
+                context = browser.new_context(
+                    user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                )
+                page = context.new_page()
+                try:
+                    page.goto(url, timeout=60000, wait_until="domcontentloaded")
+                    return page.content()
+                finally:
+                    browser.close()
+        except ImportError:
+            raise Exception("Playwright is not installed. Add 'playwright' to requirements.txt")
+
+    def fetch_page_with_fallback(self, url: str) -> Optional[str]:
+        """Try standard fetch first, fall back to Playwright on failure."""
+        try:
+            return self.fetch_page(url, use_playwright=False)
+        except Exception as e:
+            logger.info(f"Standard fetch failed for {url}, retrying with Playwright: {e}")
+            return self.fetch_page(url, use_playwright=True)
 
     # -------------------------------------------------------------------------
     # Section scraping — still uses selectors since we just need hrefs
@@ -123,7 +160,7 @@ class Scraper(models.Model):
         """Scrape the section page and return a list of article URLs."""
         from bs4 import BeautifulSoup
 
-        html = self.fetch_page(self.base_url)
+        html = self.fetch_page_with_fallback(self.base_url)
         if not html:
             raise Exception("Failed to fetch section page")
 
@@ -163,7 +200,7 @@ class Scraper(models.Model):
         Fetch an article page and use the LLM to extract all fields in one shot.
         Returns a dict with keys: title, body, image_url, image_credit
         """
-        html = self.fetch_page(url)
+        html = self.fetch_page_with_fallback(url)
         if not html:
             raise Exception(f"Failed to fetch article page: {url}")
 
@@ -273,13 +310,9 @@ Original body: {body}"""
                 )
 
                 try:
-                    article = self.process_article(article_url, scraped_article)
-                    scraped_article.article = article
+                    self.process_article(article_url, scraped_article)
                     scraped_article.status = TaskStatus.SUCCESS
                     scraped_article.save()
-
-                    if self.auto_publish:
-                        article.publish()
 
                     logger.info(f"Successfully scraped: {article_url}")
 
@@ -408,16 +441,14 @@ class ScrapedArticle(models.Model):
     query_params = models.TextField(
         null=True, blank=True, help_text="URL query parameters"
     )
-    category = models.ForeignKey("Category", on_delete=models.CASCADE)
+    category = models.IntegerField()
     scraped_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(
         max_length=20,
         choices=TaskStatus.choices,
         default=TaskStatus.NOT_STARTED,
     )
-    article = models.OneToOneField(
-        "Article", on_delete=models.SET_NULL, null=True, blank=True
-    )
+
     scraped_text = models.TextField(null=True, blank=True)
     message = models.TextField(null=True, blank=True)
     scraper = models.ForeignKey(
@@ -452,9 +483,6 @@ class ScrapedArticle(models.Model):
             self.status = TaskStatus.SUCCESS
             self.message = None
             self.save()
-
-            if self.scraper.auto_publish:
-                article.publish()
 
             logger.info(f"Successfully retried: {self.url}")
             return True

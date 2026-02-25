@@ -52,3 +52,6 @@ stop:
 	
 restart:
 	docker compose restart
+
+scrape:
+	docker compose exec $(SERVICE_NAME) python manage.py run_scrapers

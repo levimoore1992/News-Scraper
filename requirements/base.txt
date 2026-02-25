@@ -7,6 +7,8 @@ django-auto-prefetch~=1.14
 django-htmx~=1.23
 whitenoise~=6.9
 dj-database-url~=3.0
+beautifulsoup4~=4.12
+groq~=1.0
 
 # General Libraries
 django-ckeditor-5~=0.2.15
@@ -24,3 +26,6 @@ django-lifecycle~=1.2.4
 
 # for emails
 resend~=2.19.0
+# needed for when we scrape websites that use different languages or other special characters
+python-slugify~=8.0
+playwright~=1.49

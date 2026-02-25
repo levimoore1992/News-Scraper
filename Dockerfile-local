@@ -28,6 +28,7 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # Install dependencies using pip
 RUN uv pip install -r requirements/dev.txt --system
+RUN apt-get update && playwright install chromium && playwright install-deps chromium
 
 # Make port 8000 available to the world outside this container
 EXPOSE 8000
