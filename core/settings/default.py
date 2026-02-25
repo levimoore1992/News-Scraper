@@ -68,7 +68,6 @@ INSTALLED_APPS = [
     # project apps
     "apps.users",
     "apps.scraper",
-    
 ]
 
 MIDDLEWARE = [
@@ -218,7 +217,6 @@ AUTHENTICATION_BACKENDS = ("allauth.account.auth_backends.AuthenticationBackend"
 LOGIN_URL = "account_login"
 
 
-
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 
@@ -239,7 +237,6 @@ SOCIALACCOUNT_PROVIDERS = {
         },
         "OAUTH_PKCE_ENABLED": True,
     },
-
 }
 # Social Account Settings
 SOCIALACCOUNT_LOGIN_ON_GET = True
@@ -396,3 +393,5 @@ CK_EDITOR_5_UPLOAD_FILE_VIEW_NAME = "ckeditor_upload"
 RESEND_API_KEY = os.getenv("RESEND_API_KEY")
 DEFAULT_FROM_EMAIL = "noreply@example.com"
 ENABLE_EMAILS = os.getenv("ENABLE_EMAILS", "TRUE").upper() == "TRUE"
+
+INTERNAL_API_KEY = os.getenv("INTERNAL_API_KEY")

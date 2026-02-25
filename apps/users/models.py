@@ -6,7 +6,6 @@ from django.db.models.functions import Concat
 from django.templatetags.static import static
 
 
-
 def generate_session_token():
     """
     Generate a random session token for a user.

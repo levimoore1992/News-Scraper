@@ -41,7 +41,6 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
         if existing_user := User.objects.filter(email=user.email).first():
             sociallogin.connect(request, existing_user)
 
-
     def populate_user(self, request, sociallogin, data):
         """Populate the user with custom fields"""
         user = super().populate_user(request, sociallogin, data)
